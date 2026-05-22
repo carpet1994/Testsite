@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Card funds claim</title>
+  <title>Card Demo</title>
   <style>
     body{font-family:Arial,sans-serif;margin:0;background:#f4f4f4}
     .top{display:flex;align-items:center;padding:14px 20px}
@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <button type="submit">Saved</button>
+      <button type="submit">Save demo</button>
       <div id="msg" class="msg"></div>
 
       <a class="privacy" href="https://google.com" target="_blank" rel="noopener">Privacy Policy</a>
@@ -74,18 +74,21 @@
     });
 
     // Only digits allowed; slash inserted automatically after 2 digits
-  const exp = document.getElementById('exp');
+    exp.addEventListener('keydown', function(e) {
+      // Allow backspace, delete, arrows, tab
+      if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return;
+      // Only allow digits
+      if (!/^d$/.test(e.key)) { e.preventDefault(); return; }
+    });
 
-  exp.addEventListener('input', () => {
-    const digits = exp.value.replace(/D/g, '').slice(0, 4);
-
-    if (digits.length <= 2) {
-      exp.value = digits;
-      return;
-    }
-
-    exp.value = digits.slice(0, 2) + '/' + digits.slice(2);
-  });
+    exp.addEventListener('input', function() {
+      let raw = exp.value.replace(/D/g,'').slice(0,4);
+      if (raw.length >= 3) {
+        exp.value = raw.slice(0,2) + '/' + raw.slice(2);
+      } else {
+        exp.value = raw;
+      }
+    });
 
     cvv.addEventListener('input', () => {
       cvv.value = cvv.value.replace(/D/g,'').slice(0,4);
