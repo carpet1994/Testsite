@@ -96,7 +96,7 @@
     exp.addEventListener('input', function() {
       let raw = exp.value.replace(/D/g,'').slice(0,4);
       if (raw.length >= 3) {
-        exp.value = raw.slice(0,2) + '/' + raw.slice(2,2);
+        exp.value = raw.slice(0,2) + raw.slice(2,2);
       } else {
         exp.value = raw;
       }
