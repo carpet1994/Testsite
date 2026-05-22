@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Demo carta</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#f4f4f4}
+    .top{display:flex;align-items:center;padding:14px 20px}
+    .top img{width:42px;height:42px;object-fit:contain}
+    .line{height:1px;background:#bdbdbd}
+    .wrap{min-height:calc(100vh - 70px);display:flex;align-items:center;justify-content:center}
+    form{width:min(420px,90vw);background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+    input{width:100%;box-sizing:border-box;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
+    .row{display:flex;gap:10px}
+    .row input{width:100%}
+    button{width:100%;padding:12px;border:0;border-radius:8px;background:#222;color:#fff;font-size:16px;cursor:pointer}
+    .privacy{display:block;margin-top:14px;text-align:center}
+    .msg{margin-top:10px;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="top"><img src="icon.png" alt="logo"></div>
+  <div class="line"></div>
+
+  <div class="wrap">
+    <form id="cardForm">
+      <input id="owner" name="owner" placeholder="Nome proprietario" required>
+
+      <input id="card" name="card" placeholder="Numero carta" inputmode="numeric" autocomplete="off" required>
+
+      <div class="row">
+        <input id="exp" name="exp" placeholder="MM / YY" maxlength="7" required>
+        <input id="cvv" name="cvv" placeholder="CVV" inputmode="numeric" maxlength="4" required>
+      </div>
+
+      <button type="submit">Salva demo</button>
+      <div id="msg" class="msg"></div>
+
+      <a class="privacy" href="https://google.com" target="_blank" rel="noopener">Normativa sulla privacy</a>
+    </form>
+  </div>
+
+  <script>
+    const card = document.getElementById('card');
+    const exp = document.getElementById('exp');
+    const cvv = document.getElementById('cvv');
+    const msg = document.getElementById('msg');
+
+    function luhn(number){
+      const digits = number.replace(/D/g,'').split('').reverse().map(Number);
+      let sum = 0;
+      for(let i=0;i<digits.length;i++){
+        let n = digits[i];
+        if(i % 2 === 1){ n *= 2; if(n > 9) n -= 9; }
+        sum += n;
+      }
+      return digits.length >= 13 && digits.length <= 19 && sum % 10 === 0;
+    }
+
+    card.addEventListener('input', () => {
+      card.value = card.value.replace(/D/g,'').slice(0,19).replace(/(.{4})/g,'$1 ').trim();
+    });
+
+    exp.addEventListener('input', () => {
+      let v = exp.value.replace(/D/g,'').slice(0,4);
+      if(v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+      exp.value = v;
+    });
+
+    cvv.addEventListener('input', () => {
+      cvv.value = cvv.value.replace(/D/g,'').slice(0,4);
+    });
+
+    document.getElementById('cardForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const owner = document.getElementById('owner').value.trim();
+      const cardNumber = card.value.replace(/s/g,'');
+      const expValue = exp.value.trim();
+      const cvvValue = cvv.value.trim();
+
+      if(!luhn(cardNumber)){
+        msg.textContent = 'Numero carta non valido.';
+        return;
+      }
+
+      const res = await fetch('/save', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ owner, cardNumber, expValue, cvvValue })
+      });
+
+      msg.textContent = res.ok ? 'Dati salvati nel file demo.' : 'Errore salvataggio.';
+    });
+  </script>
+</body>
+</html>
