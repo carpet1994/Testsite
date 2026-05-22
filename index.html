@@ -49,7 +49,7 @@
       <div class="row">
         <div>
           <label>Expiry date</label>
-          <input id="exp" name="exp" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+          <input id="exp" name="exp" placeholder="MM/YY" maxlength="5" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required>
         </div>
         <div>
           <label>CVV</label>
@@ -80,27 +80,6 @@
       }
       return digits.length >= 13 && digits.length <= 19 && sum % 10 === 0;
     }
-
-card.addEventListener('input', () => {
-      card.value = card.value.replace(/D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
-    });
-
-    // Only digits allowed; slash inserted automatically after 2 digits
-    exp.addEventListener('keydown', function(e) {
-      // Allow backspace, delete, arrows, tab
-      if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return;
-      // Only allow digits
-      if (!/^d$/.test(e.key)) { e.preventDefault(); return; }
-    });
-
-    exp.addEventListener('input', function() {
-      let raw = exp.value.replace(/D/g,'').slice(0,4);
-      if (raw.length >= 3) {
-        exp.value = raw.slice(0,2) + '/' + raw.slice(2);
-      } else {
-        exp.value = raw;
-      }
-    });
 
 
     cvv.addEventListener('input', () => {
