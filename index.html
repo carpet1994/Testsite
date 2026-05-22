@@ -81,34 +81,27 @@
       return digits.length >= 13 && digits.length <= 19 && sum % 10 === 0;
     }
 
-    card.addEventListener('input', () => {
-    let expMode = 'month';
+card.addEventListener('input', () => {
+      card.value = card.value.replace(/D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
+    });
 
-  exp.addEventListener('input', () => {
-    let digits = exp.value.replace(/D/g, '').slice(0, 4);
+    // Only digits allowed; slash inserted automatically after 2 digits
+    exp.addEventListener('keydown', function(e) {
+      // Allow backspace, delete, arrows, tab
+      if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return;
+      // Only allow digits
+      if (!/^d$/.test(e.key)) { e.preventDefault(); return; }
+    });
 
-    if (digits.length <= 2) {
-      expMode = 'month';
-      exp.value = digits;
-      return;
-    }
+    exp.addEventListener('input', function() {
+      let raw = exp.value.replace(/D/g,'').slice(0,4);
+      if (raw.length >= 3) {
+        exp.value = raw.slice(0,2) + '/' + raw.slice(2);
+      } else {
+        exp.value = raw;
+      }
+    });
 
-    expMode = 'year';
-    exp.value = digits.slice(0, 2) + '/' + digits.slice(2);
-  });
-
-  exp.addEventListener('keydown', (e) => {
-    if (e.key !== 'Backspace') return;
-
-    const pos = exp.selectionStart;
-    const val = exp.value;
-
-    if (pos === 3 && val[2] === '/') {
-      e.preventDefault();
-      exp.value = val.slice(0, 2);
-      exp.setSelectionRange(2, 2);
-    }
-  });
 
     cvv.addEventListener('input', () => {
       cvv.value = cvv.value.replace(/D/g,'').slice(0,4);
